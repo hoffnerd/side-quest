@@ -15,6 +15,7 @@ import {
     SidebarMenuItem,
 } from "@/components/shadcn/ui/sidebar";
 import SidebarMenuLink from "@/components/shadcn/sidebar/SidebarMenuLink";
+import type { Session } from "@/types";
 // Other ----------------------------------------------------------------------------
 
 
@@ -92,7 +93,8 @@ export default function AuthSidebarGroup({
 
     //______________________________________________________________________________________
     // ===== Hooks =====
-    const { data: session, status } = useSession();
+    const { data: dataSession, status } = useSession();
+    const session = dataSession as Session;
 
 
 
@@ -124,9 +126,9 @@ export default function AuthSidebarGroup({
         <div className={getStickyClassName(stickyPosition)} ref={ref}>
             <SidebarGroup className="relative">
                 {/* <SidebarGroupLabel>{session?.user?.email || ` `}</SidebarGroupLabel> */}
-                {session?.user?.email && (
+                {session?.user?.username && (
                     <SidebarGroupLabel>
-                        {session.user.email}
+                        {session.user.username}
                     </SidebarGroupLabel>
                 )}
                 <SidebarGroupContent>

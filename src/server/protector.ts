@@ -17,7 +17,7 @@ import { checkAllowedRoles } from "@/util";
 //______________________________________________________________________________________
 // ===== Types =====
 
-interface OptionsActionProtection {
+export interface OptionsActionProtection {
     /** optional string, default is `PROJECT_USER_ROLE_HIGHEST`. Defines the required role to access the page. */
     allowedRoles?: Array<keyof typeof PROJECT_USER_ROLES>;
 }
@@ -58,11 +58,26 @@ export const actionProtection = async (options: OptionsActionProtection = {}) =>
     return { error: false, message: "Success!", session };
 }
 
-export const pageProtection = async (options: OptionsPageProtection = {}) => {
+export const pageProtectionCore = async (options: OptionsPageProtection = {}) => {
     const { allowedRoles, redirectNotLoggedIn, redirectUnauthorized } = { ...DEFAULT_OPTIONS_PAGE, ...options };
     const session = await auth() as Session | null;
     if(redirectNotLoggedIn && (!session)) return redirect(redirectNotLoggedIn);
     if(!checkAllowedRoles(session, allowedRoles)) return redirect(redirectUnauthorized);
-    if(!session?.user?.username) return redirect("/settings");
+    return { error: false, message: "Success!", session }; 
+}
+
+export const pageProtection = async (options: OptionsPageProtection = {}) => {
+    const { allowedRoles, redirectNotLoggedIn, redirectUnauthorized } = { ...DEFAULT_OPTIONS_PAGE, ...options };
+    const session = await auth() as Session | null;
+
+    if(allowedRoles.includes("UNAUTHORIZED") && ((!session) || (session?.user?.role === "UNAUTHORIZED"))){
+        return { error: false, message: "Success!", session };
+    }
+
+    if(redirectNotLoggedIn && (!session)) return redirect(redirectNotLoggedIn);
+    if(redirectUnauthorized && (!checkAllowedRoles(session, allowedRoles))) return redirect(redirectUnauthorized);
+
+    if(!session?.user?.username) return redirect("/settings?error=no-username");
+    
     return { error: false, message: "Success!", session }; 
 }
