@@ -11,9 +11,10 @@ import { updateSettings } from "@/server/settings";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shadcn/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 import PageWrapper from "@/components/PageWrapper";
+import SettingsForm from "@/components/SettingsForm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/ui/card";
 // Data ----------------------------------------------------------------------------
 // Other ---------------------------------------------------------------------------
-
 
 
 
@@ -29,15 +30,15 @@ export default async function Page({
 }) {
 
     //______________________________________________________________________________________
-    // ===== Search Parameters =====
-    const err = (await searchParams).error;
-    const hasUsernameError = err === "no-username";
-
-
-
-    //______________________________________________________________________________________
     // ===== Page Protector =====
     const { error, message, session } = await pageProtectionCore();
+
+
+    
+    //______________________________________________________________________________________
+    // ===== Search Parameters =====
+    const err = (await searchParams).error;
+    const hasUsernameError = err === "no-username" && (session?.user?.username ? false : true);
 
 
     
@@ -45,30 +46,27 @@ export default async function Page({
     // ===== Component Return =====
     return (
         <PageWrapper>
-            <div className="container mx-auto">
-                <h1 className="text-3xl font-extrabold pb-4">Settings</h1>
+            <div className="container mx-auto flex flex-col items-center justify-center">
+                <div className="pb-16"/>
+                <Card className="w-full max-w-md">
+                    <CardHeader>
+                        <CardTitle className="text-2xl text-center">Settings</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {(hasUsernameError || error) && (
+                            <Alert variant="destructive" className="mb-4 -mt-4">
+                                <AlertCircleIcon />
+                                {(!hasUsernameError) &&<AlertTitle>Error!</AlertTitle>}
+                                <AlertDescription>
+                                    {hasUsernameError && <p>Please enter a username.</p>}
+                                    {error && <p>{message ?? "An unknown error occurred."}</p>}
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        <SettingsForm/>
+                    </CardContent>
+                </Card>
 
-                {(hasUsernameError || error) && (
-                    <Alert variant="destructive" className="mb-4">
-                        <AlertCircleIcon />
-                        {(!hasUsernameError) &&<AlertTitle>Error!</AlertTitle>}
-                        <AlertDescription>
-                            {hasUsernameError && <p>Please enter a username.</p>}
-                            {error && <p>{message ?? "An unknown error occurred."}</p>}
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                <Form action={updateSettings}>
-                    <Input
-                        name="username"
-                        type="text"
-                        placeholder="Username"
-                        defaultValue={session?.user?.username ?? ""}
-                        required
-                    />
-                    <Button type="submit">Save</Button>
-                </Form>
             </div>
         </PageWrapper>
     )

@@ -37,4 +37,20 @@ export const PROJECT_USER_ROLE_STANDARD_ALLOWED: Array<keyof typeof PROJECT_USER
 
 
 //______________________________________________________________________________________
+// ===== Themes =====
+
+export const THEMES = {
+    dark: {
+        display: "Dark",
+        bodyClassName: "dark",
+    },
+    light: {
+        display: "Light",
+        bodyClassName: "light",
+    },
+}
+
+
+
+//______________________________________________________________________________________
 // =====  =====

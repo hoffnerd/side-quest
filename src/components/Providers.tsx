@@ -8,6 +8,7 @@ import { SessionProvider } from "next-auth/react"
 // Hooks ----------------------------------------------------------------------------
 // Components -----------------------------------------------------------------------
 import { SidebarProvider } from "./shadcn/ui/sidebar";
+import MicroClient from "./clients/MicroClient";
 // Other ----------------------------------------------------------------------------
 
 
@@ -19,6 +20,7 @@ export default function Providers({ children }: Readonly<{ children: React.React
     return (
         <SessionProvider>
             <SidebarProvider>
+                <MicroClient />
                 {children}
             </SidebarProvider>
         </SessionProvider>

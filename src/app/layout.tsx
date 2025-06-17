@@ -8,9 +8,10 @@ import { PROJECT_DESCRIPTION, PROJECT_SIDEBAR_OPTIONS, PROJECT_TITLE } from "@/d
 // Stores ---------------------------------------------------------------------------
 // Hooks ----------------------------------------------------------------------------
 // Components -----------------------------------------------------------------------
+import Body from "@/components/Body";
 import Providers from "@/components/Providers";
 import SidebarWithTrigger from "@/components/shadcn/sidebar/SidebarWithTrigger";
-import ProjectSidebar from "@/components/ProjectSidebar";
+import ProjectSidebar from "@/components/sidebar/ProjectSidebar";
 // Other ----------------------------------------------------------------------------
 import "@/styles/globals.css";
 
@@ -37,8 +38,8 @@ const geist = Geist({
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" className={`${geist.variable} dark`}>
-            <body>
+        <html lang="en" className={geist.variable}>
+            <Body>
                 <Providers>
                     <SidebarWithTrigger options={PROJECT_SIDEBAR_OPTIONS}>
                         <ProjectSidebar />
@@ -47,7 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                         {children}
                     </main>
                 </Providers>
-            </body>
+            </Body>
         </html>
     );
 }

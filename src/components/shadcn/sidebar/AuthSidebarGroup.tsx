@@ -133,7 +133,7 @@ export default function AuthSidebarGroup({
                 )}
                 <SidebarGroupContent>
                     <SidebarMenu>
-                        {childrenAs === "contentAbove" ? children : otherChildren?.contentAbove}
+                        {childrenAs === "contentAbove" && children ? children : otherChildren?.contentAbove}
                         {status === "loading" && (
                             <SidebarMenuItem>
                                 <SidebarMenuButton onClick={() => {}}>
@@ -148,7 +148,7 @@ export default function AuthSidebarGroup({
                             </SidebarMenuLink>
                         )}
                         {status === "authenticated" && <>
-                            {childrenAs === "authenticated" ? children : otherChildren?.authenticated}
+                            {childrenAs === "authenticated" && children ? children : otherChildren?.authenticated}
                             <SidebarMenuItem>
                                 <SidebarMenuButton onClick={()=>signOut()}>
                                     <LogOutIcon />
@@ -156,7 +156,7 @@ export default function AuthSidebarGroup({
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         </>}
-                        {childrenAs === "contentBelow" ? children : otherChildren?.contentBelow}
+                        {childrenAs === "contentBelow" && children ? children : otherChildren?.contentBelow}
                     </SidebarMenu>
                 </SidebarGroupContent>
             </SidebarGroup>
