@@ -10,7 +10,7 @@ import { cn } from "@/lib/shadcn";
 //______________________________________________________________________________________
 // ===== Component =====
 
-export default function PageWrapper({ children, className }: { children: React.ReactNode, className?: string }) {
+export default function PageWrapper({ children, className }: { children?: React.ReactNode, className?: string }) {
     
     //______________________________________________________________________________________
     // ===== Component Return =====

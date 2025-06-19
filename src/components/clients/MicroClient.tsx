@@ -5,6 +5,8 @@
 import { useEffect } from "react";
 // Stores----------------------------------------------------------------------------
 import { useProjectStore } from "@/stores/useProjectStore";
+// Hooks ----------------------------------------------------------------------------
+import useRouteKickBack from "@/hooks/useRouteKickBack";
 // Components -----------------------------------------------------------------------
 // Data -----------------------------------------------------------------------------
 import { THEMES } from "@/data/_config";
@@ -21,6 +23,12 @@ export default function MicroClient() {
     // ===== Stores =====
     const setStoreKeyValuePair = useProjectStore((state) => state.setStoreKeyValuePair);
     const theme = useProjectStore((state) => state.theme);
+
+
+
+    //______________________________________________________________________________________
+    // ===== Hooks =====
+    const hasKickedBack = useRouteKickBack("/dashboard", ["/"]);
 
 
 

@@ -1,18 +1,15 @@
 
 // Types ---------------------------------------------------------------------------
 // Packages ------------------------------------------------------------------------
-import Form from "next/form";
+import { redirect } from "next/navigation";
+import { AlertCircleIcon } from "lucide-react";
 // Server --------------------------------------------------------------------------
 import { pageProtectionCore } from "@/server/protector";
 // Components ----------------------------------------------------------------------
-import { Input } from "@/components/shadcn/ui/input";
-import { Button } from "@/components/shadcn/ui/button";
-import { updateSettings } from "@/server/settings";
-import { Alert, AlertDescription, AlertTitle } from "@/components/shadcn/ui/alert";
-import { AlertCircleIcon } from "lucide-react";
 import PageWrapper from "@/components/PageWrapper";
-import SettingsForm from "@/components/SettingsForm";
+import { Alert, AlertDescription, AlertTitle } from "@/components/shadcn/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/ui/card";
+import SettingsForm from "@/components/SettingsForm";
 // Data ----------------------------------------------------------------------------
 // Other ---------------------------------------------------------------------------
 
@@ -31,19 +28,20 @@ export default async function Page({
 
     //______________________________________________________________________________________
     // ===== Page Protector =====
-    const { error, message, session } = await pageProtectionCore();
+    const { error, message, session } = await pageProtectionCore({ redirectNotLoggedIn: "/signin?callbackUrl=%2Fsettings" });
 
 
     
     //______________________________________________________________________________________
     // ===== Search Parameters =====
     const err = (await searchParams).error;
-    const hasUsernameError = err === "no-username" && (session?.user?.username ? false : true);
+    const hasUrlUsernameError = err === "no-username" && (session?.user?.username ? false : true);
 
 
     
     //______________________________________________________________________________________
     // ===== Component Return =====
+    if(err === "no-username" && session?.user?.username) return redirect("/dashboard");
     return (
         <PageWrapper>
             <div className="container mx-auto flex flex-col items-center justify-center">
@@ -53,12 +51,12 @@ export default async function Page({
                         <CardTitle className="text-2xl text-center">Settings</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {(hasUsernameError || error) && (
+                        {(hasUrlUsernameError || error) && (
                             <Alert variant="destructive" className="mb-4 -mt-4">
                                 <AlertCircleIcon />
-                                {(!hasUsernameError) &&<AlertTitle>Error!</AlertTitle>}
+                                {(!hasUrlUsernameError) && <AlertTitle>Error!</AlertTitle>}
                                 <AlertDescription>
-                                    {hasUsernameError && <p>Please enter a username.</p>}
+                                    {hasUrlUsernameError && <p>Please enter a username.</p>}
                                     {error && <p>{message ?? "An unknown error occurred."}</p>}
                                 </AlertDescription>
                             </Alert>

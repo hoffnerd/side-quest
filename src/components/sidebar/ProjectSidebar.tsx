@@ -8,9 +8,10 @@ import Link from "next/link";
 import AuthSidebarGroup from "../shadcn/sidebar/AuthSidebarGroup";
 import { SidebarContent, SidebarFooter, SidebarHeader, SidebarMenuButton, SidebarMenuItem } from "../shadcn/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "../shadcn/ui/dropdown-menu";
-import { ArrowRightIcon, CogIcon } from "lucide-react";
+import { ArrowRightIcon, BookUserIcon, CogIcon } from "lucide-react";
 import { THEMES } from "@/data/_config";
 import ThemeOption from "./ThemeOption";
+import SidebarMenuLink from "../shadcn/sidebar/SidebarMenuLink";
 
 
 
@@ -33,6 +34,10 @@ export default function ProjectSidebar() {
 
         <SidebarFooter>
             <AuthSidebarGroup options={{ childrenAs: "contentAbove" }}>
+                <SidebarMenuLink href="/dashboard">
+                    <BookUserIcon />
+                    <span>Dashboard</span>
+                </SidebarMenuLink>
                 <SidebarMenuItem>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

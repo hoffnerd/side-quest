@@ -14,8 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-
-
 //______________________________________________________________________________________
 // ===== Enum =====
 
@@ -25,7 +23,27 @@ enum Role {
     UNAUTHORIZED
 }
 
+enum Difficulty {
+    EASY
+    MEDIUM
+    HARD
+}
 
+enum Repeat {
+    NONE
+    DAILY
+    WEEKLY
+    MONTHLY
+    YEARLY
+}
+
+enum TaskType {
+    COUNTER_MIXED
+    COUNTER_POSITIVE
+    COUNTER_NEGATIVE
+    DAILY
+    TODO
+}
 
 //______________________________________________________________________________________
 // ===== Next Auth =====
@@ -71,16 +89,21 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    username      String?   @unique
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    role          Role      @default(USER)
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+    id             String          @id @default(cuid())
+    name           String?
+    username       String?         @unique
+    email          String?         @unique
+    emailVerified  DateTime?
+    image          String?
+    role           Role            @default(USER)
+    accounts       Account[]
+    sessions       Session[]
+    posts          Post[]
+    categories     Category[]
+    tasks          Task[]
+    tags           Tag[]
+    tasksCompleted TaskCompleted[]
+    taskTags       TaskTag[]
 }
 
 model VerificationToken {
@@ -91,7 +114,63 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-
-
 //______________________________________________________________________________________
 // ===== App =====
+
+model Category {
+    id         String     @id @default(cuid())
+    userId     String
+    difficulty Difficulty @default(EASY)
+    display    String
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
+    user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+    id             String          @id @default(cuid())
+    userId         String
+    categoryId     String?
+    type           TaskType        @default(COUNTER_MIXED)
+    difficulty     Difficulty      @default(EASY)
+    repeats        Repeat          @default(NONE)
+    every          Int             @default(1)
+    startAt        DateTime        @default(now())
+    endAt          DateTime?
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
+    user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+    taskTags       TaskTag[]
+    tasksCompleted TaskCompleted[]
+}
+
+model Tag {
+    id        String    @id @default(cuid())
+    userId    String
+    display   String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    taskTags  TaskTag[]
+}
+
+model TaskCompleted {
+    id          String   @id @default(cuid())
+    userId      String
+    taskId      String
+    completedAt DateTime @default(now())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model TaskTag {
+    id     String @id @default(cuid())
+    userId String
+    taskId String
+    tagId  String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+    tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+}
