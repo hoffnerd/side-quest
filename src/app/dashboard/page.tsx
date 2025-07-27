@@ -3,6 +3,7 @@
 // Packages ------------------------------------------------------------------------
 // Server --------------------------------------------------------------------------
 // Components ----------------------------------------------------------------------
+import DeckviewDemo from "@/components/DeckviewDemo";
 import PageWrapper from "@/components/PageWrapper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/ui/card";
 // Data ----------------------------------------------------------------------------
@@ -20,14 +21,13 @@ export default async function Page({
     params: Promise<{ slug: string }>
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-
-
-    
+ 
     //______________________________________________________________________________________
     // ===== Component Return =====
     return (
         <PageWrapper className="py-4 @container">
-            <div className="grid gap-4 grid-cols-1 @4xl:grid-cols-5 @6xl:grid-cols-4">
+            <DeckviewDemo />
+            {/* <div className="grid gap-4 grid-cols-1 @4xl:grid-cols-5 @6xl:grid-cols-4">
                 
                 <div className="col-span-1 @4xl:col-span-2 @6xl:col-span-1">
                     <Card className="w-full">
@@ -43,7 +43,7 @@ export default async function Page({
                 <div className="col-span-1 @4xl:col-span-3">
                     
                 </div>
-            </div>
+            </div> */}
         </PageWrapper>
     )
 }
