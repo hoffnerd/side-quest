@@ -6,6 +6,8 @@ import Link from "next/link";
 import { PROJECT_USER_ROLE_ALL } from "@/data/_config";
 // Server ---------------------------------------------------------------------------
 import { pageProtection } from "@/server/protector";
+import TodoForm from "@/components/todo/TodoForm";
+import Todos from "@/components/todo/Todos";
 // Hooks ----------------------------------------------------------------------------
 // Components -----------------------------------------------------------------------
 // Other ----------------------------------------------------------------------------
@@ -22,6 +24,15 @@ export default async function Page() {
 
     //______________________________________________________________________________________
     // ===== Component Return =====
+
+    return (
+        <div className="p-10">
+            <TodoForm/>
+            <hr className="my-10" />
+            <Todos/>
+        </div>
+    )
+
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b">
             <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">

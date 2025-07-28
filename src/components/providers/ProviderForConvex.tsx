@@ -1,31 +1,25 @@
-
+"use client";
 
 // Types ----------------------------------------------------------------------------
 // Packages -------------------------------------------------------------------------
-import { SessionProvider } from "next-auth/react"
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 // Data -----------------------------------------------------------------------------
 // Stores ---------------------------------------------------------------------------
 // Hooks ----------------------------------------------------------------------------
 // Components -----------------------------------------------------------------------
-import { SidebarProvider } from "./shadcn/ui/sidebar";
-import MicroClient from "./clients/MicroClient";
-import ProviderForConvex from "./providers/ProviderForConvex";
 // Other ----------------------------------------------------------------------------
 
+
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 
 //______________________________________________________________________________________
 // ===== Component =====
 
-export default function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function ProviderForConvex({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <ProviderForConvex>
-            <SessionProvider>
-                <SidebarProvider>
-                    <MicroClient />
-                    {children}
-                </SidebarProvider>
-            </SessionProvider>
-        </ProviderForConvex>
+        <ConvexProvider client={convex}>
+            {children}
+        </ConvexProvider>
     );
 }

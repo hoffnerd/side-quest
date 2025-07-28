@@ -35,6 +35,7 @@ import { Input } from "@/components/shadcn/ui/input";
 //______________________________________________________________________________________
 // ===== Component =====
 
+/** @deprecated - Needs the types to be fixed. */
 export default function InputOutputForm<TSchema extends ZodType<any, any, any>>({ formSchema }: { formSchema: TSchema }) {
 
     const form = useForm<output<TSchema>>({

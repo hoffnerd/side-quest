@@ -67,3 +67,16 @@ export const camelToTitle = (camelCase: string) => {
         .replace(/^./, (match) => match.toUpperCase())
         .trim();
 }
+
+/**
+ *  Match items in two arrays. Returns an array of items that are NOT in both arrays.
+ * @param array1 - an array of to be compared.
+ * @param array2 - an array of to be compared.
+ */
+export const matchArrays = (array1: Array<any>, array2: Array<any>) => {
+    const array1Items = array1.filter((item) => !array2.includes(item));
+    const array2Items = array2.filter((item) => !array1.includes(item));
+    const result = [ ...new Set([...array1Items, ...array2Items]) ];
+    console.log({ trace: "matchArrays", array1, array2, array1Items, array2Items, result });
+    return result;
+}

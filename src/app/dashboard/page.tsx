@@ -26,7 +26,8 @@ export default async function Page({
     // ===== Component Return =====
     return (
         <PageWrapper className="py-4 @container">
-            <DeckviewDemo />
+            
+            {/* <DeckviewDemo /> */}
             {/* <div className="grid gap-4 grid-cols-1 @4xl:grid-cols-5 @6xl:grid-cols-4">
                 
                 <div className="col-span-1 @4xl:col-span-2 @6xl:col-span-1">
