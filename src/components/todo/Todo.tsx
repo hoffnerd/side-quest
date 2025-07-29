@@ -53,15 +53,19 @@ export default function Todo({ className, todo }: Readonly<{ className?: string,
                     </Toggle>
                     {isEditing 
                         ? <>
-                            <TodoForm todo={todo} onSubmitClient={() => setIsEditing(false)} />
+                            <TodoForm todo={todo} onSubmitClient={({ values, response }) => {
+                                console.log({ trace: "onSubmitClient", values, response });
+                                if(response?.error) return;
+                                setIsEditing(false)
+                            }} />
                             <Button className="max-w-[36px]" variant="destructive" onClick={() => setIsEditing(false)}>
                                 <CircleMinusIcon />
                             </Button>
                         </>
                         : <>
                             <div className="flex flex-col gap-2 w-full">
-                                <p className={`p-2 text-sm ${isCompleted ? "text-muted-foreground line-through" : ""}`}>{display}</p>
-                                {description && <p className={`pl-2 pb-2 text-sm  ${isCompleted ? "text-muted-foreground line-through" : ""}`}>{description}</p>}
+                                <p className={`p-2 pl-[13px] text-sm ${isCompleted ? "text-muted-foreground line-through" : ""}`}>{display}</p>
+                                {description && <p className={`pb-2 pl-[13px] text-sm  ${isCompleted ? "text-muted-foreground line-through" : ""}`}>{description}</p>}
                             </div>
                             <Button className="max-w-[36px]" onClick={() => setIsEditing(true)}>
                                 <PencilIcon />

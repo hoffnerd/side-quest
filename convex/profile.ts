@@ -25,19 +25,10 @@ import { convexSafety } from "./convexSafety";
 //______________________________________________________________________________________
 // ===== Reads =====
 
-export const readTodos = query({
-    handler: async (ctx) => convexSafety(async ({ options }) => {
-        const todos = await ctx.db.query("todo").collect();
-        // throw new Error("Dev Error: readTodos");
-        return todos;
-    }, { trace: "readTodos" }),
-});
-
-export const readTodo = query({
-    args: { id: v.id("todo") },
+export const readProfileByUserId = query({
+    args: { id: v.id("user") },
     handler: async (ctx, args) => {
-        const todo = await ctx.db.get(args.id);
-        return todo;
+        return await ctx.db.get(args.id);
     },
 });
 

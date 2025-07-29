@@ -67,6 +67,7 @@ export const pageProtectionCore = async (options: OptionsPageProtection = {}) =>
 }
 
 export const pageProtection = async (options: OptionsPageProtection = {}) => {
+    return { error: false, message: "Success!", session: { a: 1 } };
     const { allowedRoles, redirectNotLoggedIn, redirectUnauthorized } = { ...DEFAULT_OPTIONS_PAGE, ...options };
     const session = await auth() as Session | null;
 

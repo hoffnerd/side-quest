@@ -13,6 +13,10 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as authAdapter from "../authAdapter.js";
+import type * as convexSafety from "../convexSafety.js";
+import type * as http from "../http.js";
+import type * as profile from "../profile.js";
 import type * as todo from "../todo.js";
 
 /**
@@ -24,6 +28,10 @@ import type * as todo from "../todo.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  authAdapter: typeof authAdapter;
+  convexSafety: typeof convexSafety;
+  http: typeof http;
+  profile: typeof profile;
   todo: typeof todo;
 }>;
 export declare const api: FilterApi<

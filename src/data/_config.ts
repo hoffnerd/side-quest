@@ -24,6 +24,9 @@ export const PROJECT_USER_ROLES = {
     TESTER: {
         display: "Tester",
     },
+    ADMIN: {
+        display: "Admin",
+    },
 }
 
 export const PROJECT_USER_ROLE_LOWEST = Object.keys(PROJECT_USER_ROLES)[0] as keyof typeof PROJECT_USER_ROLES;
@@ -32,7 +35,7 @@ export const PROJECT_USER_ROLE_HIGHEST = Object.keys(PROJECT_USER_ROLES)[ Object
 
 export const PROJECT_USER_ROLE_ALL = Object.keys(PROJECT_USER_ROLES) as Array<keyof typeof PROJECT_USER_ROLES>;
 
-export const PROJECT_USER_ROLE_STANDARD_ALLOWED: Array<keyof typeof PROJECT_USER_ROLES>  = [ "USER", "TESTER" ];
+export const PROJECT_USER_ROLE_STANDARD_ALLOWED: Array<keyof typeof PROJECT_USER_ROLES>  = [ "USER", "TESTER", "ADMIN" ];
 
 
 

@@ -1,9 +1,12 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { ConvexAdapter } from "../ConvexAdapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import { SignJWT, importPKCS8 } from "jose";
 // import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
 
 import { db } from "@/server/db";
+
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -12,19 +15,22 @@ import { db } from "@/server/db";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-    interface Session extends DefaultSession {
-        user: {
-            id: string;
-            // ...other properties
-            // role: UserRole;
-        } & DefaultSession["user"];
+    interface Session {
+        convexToken: string;
     }
-
-    // interface User {
-    //   // ...other properties
-    //   // role: UserRole;
+    // interface Session extends DefaultSession {
+    //     user: {
+    //         id: string;
+    //         // ...other properties
+    //         // role: UserRole;
+    //     } & DefaultSession["user"];
     // }
 }
+
+const CONVEX_SITE_URL = process.env.NEXT_PUBLIC_CONVEX_URL!.replace(
+    /.cloud$/,
+    ".site",
+);
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -48,14 +54,30 @@ export const authConfig = {
          * @see https://next-auth.js.org/providers/github
          */
     ],
-    adapter: PrismaAdapter(db),
+    adapter: ConvexAdapter,
     callbacks: {
-        session: ({ session, user }) => ({
-            ...session,
-            user: {
-                ...session.user,
-                id: user.id,
-            },
-        }),
+        async session({ session }) {
+            const privateKey = await importPKCS8(
+                process.env.CONVEX_AUTH_PRIVATE_KEY!,
+                "RS256",
+            );
+            const convexToken = await new SignJWT({
+                sub: session.userId,
+            })
+                .setProtectedHeader({ alg: "RS256" })
+                .setIssuedAt()
+                .setIssuer(CONVEX_SITE_URL)
+                .setAudience("convex")
+                .setExpirationTime("1h")
+                .sign(privateKey);
+            return { ...session, convexToken };
+        },
+        // session: ({ session, user }) => ({
+        //     ...session,
+        //     user: {
+        //         ...session.user,
+        //         id: user.id,
+        //     },
+        // }),
     },
 } satisfies NextAuthConfig;

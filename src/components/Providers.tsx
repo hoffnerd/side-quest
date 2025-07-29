@@ -2,14 +2,15 @@
 
 // Types ----------------------------------------------------------------------------
 // Packages -------------------------------------------------------------------------
-import { SessionProvider } from "next-auth/react"
 // Data -----------------------------------------------------------------------------
 // Stores ---------------------------------------------------------------------------
 // Hooks ----------------------------------------------------------------------------
 // Components -----------------------------------------------------------------------
 import { SidebarProvider } from "./shadcn/ui/sidebar";
 import MicroClient from "./clients/MicroClient";
-import ProviderForConvex from "./providers/ProviderForConvex";
+import { auth } from "@/server/auth";
+import ConvexClientProvider from "./providers/ConvexProviderWithAuth";
+// import ProviderForConvex from "./providers/ProviderForConvex";
 // Other ----------------------------------------------------------------------------
 
 
@@ -17,15 +18,14 @@ import ProviderForConvex from "./providers/ProviderForConvex";
 //______________________________________________________________________________________
 // ===== Component =====
 
-export default function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
+    const session = await auth();
     return (
-        <ProviderForConvex>
-            <SessionProvider>
-                <SidebarProvider>
-                    <MicroClient />
-                    {children}
-                </SidebarProvider>
-            </SessionProvider>
-        </ProviderForConvex>
+        <ConvexClientProvider session={session}>
+            <SidebarProvider>
+                <MicroClient />
+                {children}
+            </SidebarProvider>
+        </ConvexClientProvider>
     );
 }

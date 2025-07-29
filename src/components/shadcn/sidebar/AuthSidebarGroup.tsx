@@ -96,6 +96,9 @@ export default function AuthSidebarGroup({
     const { data: dataSession, status } = useSession();
     const session = dataSession as Session;
 
+    useEffect(() => {
+        console.log({ trace: "AuthSidebarGroup useEffect", dataSession, status });
+    }, [status])
 
 
     //______________________________________________________________________________________

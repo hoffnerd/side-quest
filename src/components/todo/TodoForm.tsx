@@ -44,7 +44,7 @@ const updateZodSchema = z.object({
 //______________________________________________________________________________________
 // ===== Component =====
 
-export default function TodoForm({ todo, onSubmitClient }: Readonly<{ todo?: Doc<"todo">, onSubmitClient?: () => void }>) {
+export default function TodoForm({ todo, onSubmitClient }: Readonly<{ todo?: Doc<"todo">, onSubmitClient?: (data: { values: any, response: any }) => void }>) {
 
     //______________________________________________________________________________________
     // ===== Constants =====

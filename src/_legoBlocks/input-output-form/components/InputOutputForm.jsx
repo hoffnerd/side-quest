@@ -317,20 +317,14 @@ export default function InputOutputForm({ className, classNames, zodSchema, fiel
     // ===== Functions =====
 
     const onSubmit = async (values) => {
-        console.log({ trace: "onSubmit", values });
         setIsSubmitting(true);
         const response = onSubmitServer 
             ? await onSubmitServer({ ...values, ...additionalData })
             : { error: true, message:"Dev Error: onSubmitServer not given to InputOutputForm" };
 
-        console.log({ trace: "onSubmit", response });
-
-        if(onSubmitClient) onSubmitClient(response);
-        
-        console.log({ trace: "onSubmit after onSubmitClient" });
+        if(onSubmitClient) onSubmitClient({ values, response });
 
         if(response?.error) form.setError(response?.data?.errorLocation ?? "root", { message: response?.message ?? "An unknown error occurred." });
-        console.log({ trace: "onSubmit after error" });
         setIsSubmitting(false);
         form.reset();
     };
