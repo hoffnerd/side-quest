@@ -13,12 +13,6 @@ export const userSchema = {
     name: v.optional(v.string()),
     emailVerified: v.optional(v.number()),
     image: v.optional(v.string()),
-    role: v.union(
-        v.literal("ADMIN"),
-        v.literal("TESTER"),
-        v.literal("USER"),
-        v.literal("UNAUTHORIZED"),
-    ),
 };
 
 export const sessionSchema = {
@@ -83,17 +77,34 @@ const authTables = {
 
 
 //______________________________________________________________________________________
+// ===== Validators =====
+
+export const userMetadataRoleValidator = v.union(
+    v.literal("admin"),
+    v.literal("tester"),
+    v.literal("user"),
+    v.literal("unauthorized"),
+);
+
+
+
+//______________________________________________________________________________________
 // ===== Schema Definition =====
 
 export default defineSchema({
     ...authTables,
-    profile: defineTable({
+    userMetadata: defineTable({
+        userId: v.id("users"),
+        role: userMetadataRoleValidator,
+    }).index("userId", ["userId"]),
+    userProfile: defineTable({
         userId: v.id("users"),
         username: v.string(),
     }).index("userId", ["userId"]),
     todo: defineTable({
+        userId: v.id("users"),
         display: v.string(),
         description: v.optional(v.string()),
         isCompleted: v.boolean(),
-    }),
+    }).index("userId", ["userId"]),
 });

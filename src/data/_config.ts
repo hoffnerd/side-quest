@@ -15,16 +15,16 @@ export const PROJECT_SIDEBAR_OPTIONS = {
 }
 
 export const PROJECT_USER_ROLES = {
-    UNAUTHORIZED: {
+    unauthorized: {
         display: "Unauthorized",
     },
-    USER: {
+    user: {
         display: "User",
     },
-    TESTER: {
+    tester: {
         display: "Tester",
     },
-    ADMIN: {
+    admin: {
         display: "Admin",
     },
 }
@@ -35,7 +35,7 @@ export const PROJECT_USER_ROLE_HIGHEST = Object.keys(PROJECT_USER_ROLES)[ Object
 
 export const PROJECT_USER_ROLE_ALL = Object.keys(PROJECT_USER_ROLES) as Array<keyof typeof PROJECT_USER_ROLES>;
 
-export const PROJECT_USER_ROLE_STANDARD_ALLOWED: Array<keyof typeof PROJECT_USER_ROLES>  = [ "USER", "TESTER", "ADMIN" ];
+export const PROJECT_USER_ROLE_STANDARD_ALLOWED: Array<keyof typeof PROJECT_USER_ROLES>  = [ "user", "tester", "admin" ];
 
 
 

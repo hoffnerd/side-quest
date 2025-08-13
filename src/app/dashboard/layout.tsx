@@ -12,6 +12,6 @@ import { pageProtection } from "@/server/protector";
 // ===== Component =====
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-    await pageProtection({ redirectNotLoggedIn: "/signin?callbackUrl=%2Fdashboard" });
+    await pageProtection({ redirectUnauthorized: "/signin?callbackUrl=%2Fdashboard" });
     return children;
 }

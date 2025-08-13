@@ -4,12 +4,14 @@
 import { redirect } from "next/navigation";
 import { AlertCircleIcon } from "lucide-react";
 // Server --------------------------------------------------------------------------
-import { pageProtectionCore } from "@/server/protector";
+import { pageProtection } from "@/server/protector";
 // Components ----------------------------------------------------------------------
 import PageWrapper from "@/components/PageWrapper";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shadcn/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/ui/card";
 import SettingsForm from "@/components/SettingsForm";
+import { fetchQuery } from "convex/nextjs";
+import { api } from "convex/_generated/api";
 // Data ----------------------------------------------------------------------------
 // Other ---------------------------------------------------------------------------
 
@@ -28,20 +30,28 @@ export default async function Page({
 
     //______________________________________________________________________________________
     // ===== Page Protector =====
-    const { error, message, session } = await pageProtectionCore({ redirectNotLoggedIn: "/signin?callbackUrl=%2Fsettings" });
+    const pageProtectionResponse = await pageProtection({ 
+        redirectUnauthorized: "/signin?callbackUrl=%2Fsettings" 
+    });
+
+
+
+    //______________________________________________________________________________________
+    // ===== Page Protector =====
+    const { error, message, data } = await fetchQuery(api.userProfile.readUserProfile);
 
 
     
     //______________________________________________________________________________________
     // ===== Search Parameters =====
     const err = (await searchParams).error;
-    const hasUrlUsernameError = err === "no-username" && (session?.user?.username ? false : true);
+    const hasUrlUsernameError = err === "no-username" && (data?.username ? false : true);
 
 
     
     //______________________________________________________________________________________
     // ===== Component Return =====
-    if(err === "no-username" && session?.user?.username) return redirect("/dashboard");
+    // if(err === "no-username" && data?.username) return redirect("/dashboard");
     return (
         <PageWrapper>
             <div className="container mx-auto flex flex-col items-center justify-center">

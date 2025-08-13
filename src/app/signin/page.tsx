@@ -1,6 +1,5 @@
 
 // Types ---------------------------------------------------------------------------
-import type { OptionsPageProtection } from "@/server/protector";
 // Server --------------------------------------------------------------------------
 import { pageProtection } from "@/server/protector";
 // Components ----------------------------------------------------------------------
@@ -8,17 +7,6 @@ import { pageProtection } from "@/server/protector";
 import { PROJECT_TITLE } from "@/data/_config";
 import ProviderButton from "@/components/auth/ProviderButton";
 // Other ---------------------------------------------------------------------------
-
-
-
-//______________________________________________________________________________________
-// ===== True Constants =====
-
-const PAGE_PROTECTION_OPTIONS: OptionsPageProtection = {
-    allowedRoles: [ "UNAUTHORIZED" ],
-    redirectNotLoggedIn: false,
-    redirectUnauthorized: "/signedin",
-}
 
 
 
@@ -49,7 +37,10 @@ export default async function Page ({
 
     //______________________________________________________________________________________
     // ===== Page Protector =====
-    await pageProtection(PAGE_PROTECTION_OPTIONS);
+    await pageProtection({
+        redirectForbidden: "/signedin",
+        shouldOnlyAllowUnauthorized: true,
+    });
 
     //______________________________________________________________________________________
     // ===== Component Return =====

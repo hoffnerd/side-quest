@@ -3,8 +3,7 @@ import { action, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { api } from "./_generated/api";
 import type { Doc } from "./_generated/dataModel";
-import { convexSafety } from "./convexSafety";
-
+import { authorize } from "./auth";
 
 
 //______________________________________________________________________________________
@@ -26,19 +25,20 @@ import { convexSafety } from "./convexSafety";
 // ===== Reads =====
 
 export const readTodos = query({
-    handler: async (ctx) => convexSafety(async ({ options }) => {
-        const todos = await ctx.db.query("todo").collect();
+    handler: async (ctx) => authorize(ctx, async ({ userId }) => {
+        const todos = await ctx.db.query("todo").withIndex("userId", (q) => q.eq("userId", userId)).collect();
         // throw new Error("Dev Error: readTodos");
         return todos;
     }, { trace: "readTodos" }),
 });
 
 export const readTodo = query({
-    args: { id: v.id("todo") },
-    handler: async (ctx, args) => {
-        const todo = await ctx.db.get(args.id);
+    args: { _id: v.id("todo") },
+    handler: async (ctx, args) => authorize(ctx, async ({ userId }) => {
+        const todo = await ctx.db.get(args._id);
+        if(todo?.userId !== userId) throw new Error("You do not own this todo!");
         return todo;
-    },
+    }, { trace: "readTodo" }),
 });
 
 
@@ -51,17 +51,15 @@ export const createTodo = mutation({
         display: v.string(),
         description: v.optional(v.string()),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args) => authorize(ctx, async ({ userId }) => {
         const { display, description } = args;
-        const taskId = await ctx.db.insert("todo", {
+        return await ctx.db.insert("todo", {
+            userId,
             display,
             description,
             isCompleted: false,
         });
-
-        // No need to return if you are not using the return value
-        // return taskId;
-    },
+    }, { trace: "createTodo" }),
 });
 
 
@@ -75,8 +73,11 @@ export const updateTodo = mutation({
         display: v.string(),
         description: v.optional(v.string()),
     },
-    handler: async (ctx, args) => convexSafety(async ({ options }) => {
+    handler: async (ctx, args) => authorize(ctx, async ({ userId }) => {
         const { _id, display, description } = args;
+
+        const todo = await ctx.db.get(_id);
+        if(todo?.userId !== userId) throw new Error("You do not own this todo!");
 
         // throw new Error("Dev Error: updateTodo");
 
@@ -85,7 +86,7 @@ export const updateTodo = mutation({
 
         // `patch` performs a shallow merge with the given partial document. New fields are 
         // added. Existing fields are overwritten. Fields set to undefined are removed.
-        return await ctx.db.patch(_id, { display, description });
+        await ctx.db.patch(_id, { display, description });
     }, { trace: "updateTodo" }),
 });
 
@@ -94,10 +95,14 @@ export const updateTodoIsCompleted = mutation({
         _id: v.id("todo"),
         isCompleted: v.boolean(),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args) => authorize(ctx, async ({ userId }) => {
         const { _id, isCompleted } = args;
+
+        const todo = await ctx.db.get(_id);
+        if(todo?.userId !== userId) throw new Error("You do not own this todo!");
+
         await ctx.db.patch(_id, { isCompleted });
-    },
+    }, { trace: "updateTodoIsCompleted" }),
 });
 
 
@@ -107,8 +112,12 @@ export const updateTodoIsCompleted = mutation({
 
 export const deleteTodo = mutation({
     args: { _id: v.id("todo") },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args) => authorize(ctx, async ({ userId }) => {
         const { _id } = args;
+
+        const todo = await ctx.db.get(_id);
+        if(todo?.userId !== userId) throw new Error("You do not own this todo!");
+        
         await ctx.db.delete(_id);
-    },
+    }, { trace: "deleteTodo" }),
 });

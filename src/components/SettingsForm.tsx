@@ -10,6 +10,10 @@ import { z } from "zod/v4";
 import { updateSettings } from "@/server/settings";
 // Components ----------------------------------------------------------------------
 import InputOutputForm from "@/_legoBlocks/input-output-form/components/InputOutputForm";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "convex/_generated/api";
+import { Alert } from "@/_legoBlocks/nextjsCommon/components/Alert";
+import { AlertCircleIcon } from "lucide-react";
 // Data ----------------------------------------------------------------------------
 // Other ---------------------------------------------------------------------------
 
@@ -31,16 +35,15 @@ const zodSchema = z.object({
 // ===== Component =====
 
 export default function SettingsForm() {
-
     //______________________________________________________________________________________
     // ===== Hooks =====
-    // const router = useRouter();
-    const { data: dataSession, status } = useSession();
-    const session = dataSession as Session;
+    const userProfileResponse = useQuery(api.userProfile.readUserProfile);
+    const updateUserProfile = useMutation(api.userProfile.updateUserProfile);
 
     //______________________________________________________________________________________
     // ===== Component Return =====
-    if(status === "loading") return <div>Loading...</div>;
+    if(!userProfileResponse) return <div>Loading...</div>;
+    if(userProfileResponse.error) return <Alert>{userProfileResponse.message}</Alert>;
     return (
         <InputOutputForm
             zodSchema={zodSchema}
@@ -48,10 +51,10 @@ export default function SettingsForm() {
                 username: {
                     label: "Username",
                     description: "This is your public display name.",
-                    defaultValue: session?.user?.username ?? "",
+                    defaultValue: userProfileResponse?.data?.username ?? "",
                 },
             }}
-            onSubmitServer={updateSettings}
+            onSubmitServer={updateUserProfile}
             onSubmitClient={({ error }: Awaited<ReturnType<typeof updateSettings>>) => {
                 if(error) return;
                 // router.refresh(); // Only refreshes the page, not the entire app.

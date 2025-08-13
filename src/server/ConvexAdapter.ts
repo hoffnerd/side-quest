@@ -34,7 +34,7 @@ export const ConvexAdapter: Adapter = {
     },
     async createUser({ id: _, ...user }: User) {
         const id = await callMutation(api.authAdapter.createUser, {
-            user: { ...toDB(user), role: "USER" },
+            user: { ...toDB(user) },
         });
         return { ...user, id };
     },

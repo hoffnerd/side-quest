@@ -1,33 +1,30 @@
+import "server-only";
 
 // Types ----------------------------------------------------------------------------
-import type { Session } from "@/types";
 // Packages -------------------------------------------------------------------------
 import { redirect } from "next/navigation";
-import { auth } from "./auth";
+import { fetchQuery } from "convex/nextjs";
 // Data -----------------------------------------------------------------------------
-import { PROJECT_USER_ROLE_STANDARD_ALLOWED, PROJECT_USER_ROLES } from "@/data/_config";
 // Stores ---------------------------------------------------------------------------
 // Hooks ----------------------------------------------------------------------------
 // Components -----------------------------------------------------------------------
 // Other ----------------------------------------------------------------------------
-import { checkAllowedRoles } from "@/util";
+import { api } from "convex/_generated/api";
 
 
 
 //______________________________________________________________________________________
 // ===== Types =====
 
-export interface OptionsActionProtection {
-    /** optional string, default is `PROJECT_USER_ROLE_HIGHEST`. Defines the required role to access the page. */
-    allowedRoles?: Array<keyof typeof PROJECT_USER_ROLES>;
-}
-
-export interface OptionsPageProtection extends OptionsActionProtection {
+export interface OptionsPageProtection {
     /** optional string, default is "/". Defines the destination to redirect to if the user is not logged in. */
-    redirectNotLoggedIn?: string | false;
+    redirectUnauthorized?: string;
 
     /** optional string, default is "/". Defines the destination to redirect to if the user is not authorized. */
-    redirectUnauthorized?: string;
+    redirectForbidden?: string;
+
+    shouldAllowUnauthorized?: boolean;
+    shouldOnlyAllowUnauthorized?: boolean;
 }
 
 
@@ -35,14 +32,11 @@ export interface OptionsPageProtection extends OptionsActionProtection {
 //______________________________________________________________________________________
 // ===== True Constants =====
 
-const DEFAULT_OPTIONS_ACTION = {
-    allowedRoles: PROJECT_USER_ROLE_STANDARD_ALLOWED,
-}
-
 const DEFAULT_OPTIONS_PAGE = {
-    ...DEFAULT_OPTIONS_ACTION,
-    redirectNotLoggedIn: "/",
     redirectUnauthorized: "/",
+    redirectForbidden: "/",
+    shouldAllowUnauthorized: false,
+    shouldOnlyAllowUnauthorized: false,
 }
 
 
@@ -50,35 +44,31 @@ const DEFAULT_OPTIONS_PAGE = {
 //______________________________________________________________________________________
 // ===== Functions =====
 
-export const actionProtection = async (options: OptionsActionProtection = {}) => {
-    const { allowedRoles } = { ...DEFAULT_OPTIONS_ACTION, ...options };
-    const session = await auth() as Session | null;
-    if(!session) return { error: true, message: "Unauthorized!", session };
-    if(!checkAllowedRoles(session, allowedRoles)) return { error: true, message: "Forbidden!", session };
-    return { error: false, message: "Success!", session };
-}
-
-export const pageProtectionCore = async (options: OptionsPageProtection = {}) => {
-    const { allowedRoles, redirectNotLoggedIn, redirectUnauthorized } = { ...DEFAULT_OPTIONS_PAGE, ...options };
-    const session = await auth() as Session | null;
-    if(redirectNotLoggedIn && (!session)) return redirect(redirectNotLoggedIn);
-    if(!checkAllowedRoles(session, allowedRoles)) return redirect(redirectUnauthorized);
-    return { error: false, message: "Success!", session }; 
-}
-
 export const pageProtection = async (options: OptionsPageProtection = {}) => {
-    return { error: false, message: "Success!", session: { a: 1 } };
-    const { allowedRoles, redirectNotLoggedIn, redirectUnauthorized } = { ...DEFAULT_OPTIONS_PAGE, ...options };
-    const session = await auth() as Session | null;
-
-    if(allowedRoles.includes("UNAUTHORIZED") && ((!session) || (session?.user?.role === "UNAUTHORIZED"))){
-        return { error: false, message: "Success!", session };
-    }
-
-    if(redirectNotLoggedIn && (!session)) return redirect(redirectNotLoggedIn);
-    if(redirectUnauthorized && (!checkAllowedRoles(session, allowedRoles))) return redirect(redirectUnauthorized);
-
-    if(!session?.user?.username) return redirect("/settings?error=no-username");
-    
-    return { error: false, message: "Success!", session }; 
+    const { 
+        redirectUnauthorized,
+        redirectForbidden,
+        shouldAllowUnauthorized,
+        shouldOnlyAllowUnauthorized,
+    } = { ...DEFAULT_OPTIONS_PAGE, ...options };
+    const { error, message, data: userRole } = await fetchQuery(api.userMetadata.readUserRole);
+    console.log({
+        trace: "pageProtection",
+        options: {
+            redirectUnauthorized,
+            redirectForbidden,
+            shouldAllowUnauthorized,
+            shouldOnlyAllowUnauthorized,
+        },
+        error,
+        message,
+        userRole,
+    })
+    // if(shouldOnlyAllowUnauthorized && userRole !== "unauthorized") return redirect(redirectForbidden);
+    // if(error) {
+    //     if(message === "Unauthorized!" && !shouldAllowUnauthorized) return redirect(redirectUnauthorized);
+    //     if(message === "Forbidden!") return redirect(redirectForbidden);
+    //     if( !["Unauthorized!", "Forbidden!"].includes(message) ) return { error: true, message };
+    // }
+    return { error: false, message: "Success!" }; 
 }

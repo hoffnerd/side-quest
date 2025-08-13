@@ -59,7 +59,9 @@ export const createSession = adapterMutation({
 export const createUser = adapterMutation({
     args: { user: v.object(userSchema) },
     handler: async (ctx, { user }) => {
-        return await ctx.db.insert("users", { ...user, role: "USER" });
+        const userId = await ctx.db.insert("users", { ...user });
+        await ctx.db.insert("userMetadata", { userId, role: "user" });
+        return userId;
     },
 });
 

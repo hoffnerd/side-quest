@@ -3,7 +3,6 @@
 // Packages -------------------------------------------------------------------------
 import Link from "next/link";
 // Data -----------------------------------------------------------------------------
-import { PROJECT_USER_ROLE_ALL } from "@/data/_config";
 // Server ---------------------------------------------------------------------------
 import { pageProtection } from "@/server/protector";
 import TodoForm from "@/components/todo/TodoForm";
@@ -20,7 +19,7 @@ import Todos from "@/components/todo/Todos";
 export default async function Page() {
     //______________________________________________________________________________________
     // ===== Page Protector =====
-    await pageProtection({ allowedRoles: PROJECT_USER_ROLE_ALL });
+    await pageProtection({ shouldAllowUnauthorized: true });
 
     //______________________________________________________________________________________
     // ===== Component Return =====
